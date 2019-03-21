@@ -1,0 +1,13 @@
+certifi
+chardet
+coverage
+Django
+djangorestframework
+djangorestframework-simplejwt
+idna
+pkg-resources
+psycopg2-binary
+PyJWT
+pytz
+requests
+urllib3

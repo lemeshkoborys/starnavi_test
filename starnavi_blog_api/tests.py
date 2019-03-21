@@ -259,6 +259,72 @@ class UserCanSignUpAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class UserCanSignInAPITestCase(APITestCase):
+
+    """
+    Checks if user can sign in
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='test_case_user',
+            email='test@case.email',
+            password='test_case_password'
+        )
+        self.url = '/sign-in/'
+        self.request = Request(FACTORY.get(self.url))
+
+    def test_user_can_sign_in(self):
+
+        """
+        Checks if user can sign in and server returned JWT
+        """
+
+        response = self.client.post(
+            self.url,
+            data={
+                'username': self.user.username,
+                'password': 'test_case_password'
+            },
+            format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['access'])
+
+    def test_user_cant_login_user_does_not_exist(self):
+
+        """
+        Checks if unregistred user can't login
+        """
+
+        response = self.client.post(
+            self.url,
+            data={
+                'username': 'bat_user_username',
+                'password': 'test_case_password'
+            },
+            format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(response.data['non_field_errors'])
+
+    def test_user_cant_login_invalid_password(self):
+        """
+        Checks if user can't login with bad password
+        """
+
+        response = self.client.post(
+            self.url,
+            data={
+                'username': self.user.username,
+                'password': 'bad_password'
+            },
+            format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(response.data['non_field_errors'])
+
+
 class PostLikesAPITestCase(APITestCase):
     """
     Checks if user can like some posts
